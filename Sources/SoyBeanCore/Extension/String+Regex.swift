@@ -10,8 +10,15 @@ import Foundation
 
 public extension String {
     enum RegExType: String {
-        /// 영 대,소문자 & 한글 & 숫자만 허용
-        case onlyEnglishKoreanNumAnsSomeSpecialCharacter = "^[A-Za-z가-힣!?.,()@/-♡*_~^#&♤☆♧<>{}[]※《》♬♪★♥♣●♠◈◆◎●○％ⅠⅡⅢⅣⅤⅥⅦⅧⅨ]$"
+        /// 영 대,소문자 & 한글 & 숫자 허용 & 공백 및 대괄호를 포함한 일부 특수문자 허용
+        case onlyEnglishKoreanNumAnsSomeSpecialCharacter = "^[A-Za-z가-힣s!?.,()@/-♡*_~^#&♤☆♧<>{}\\[\\]\\s※《》♬♪★♥♣●♠◈◆◎●○％ⅠⅡⅢⅣⅤⅥⅦⅧⅨ]*$"
+        
+        var reverse: String {
+            switch self {
+            case .onlyEnglishKoreanNumAnsSomeSpecialCharacter:
+                return "^[^A-Za-z가-힣s!?.,()@/-♡*_~^#&♤☆♧<>{}\\[\\]\\s※《》♬♪★♥♣●♠◈◆◎●○％ⅠⅡⅢⅣⅤⅥⅦⅧⅨ]*$"
+            }
+        }
     }
     
     /// 정규식 통과 유무 반환
@@ -25,5 +32,10 @@ public extension String {
         } else {
             return false
         }
+    }
+    
+    /// 정규식과 맞지않는 문자를 제거한 뒤 반환
+    func removeNonMatchingCharacters(with regExType: RegExType) -> String {
+        self.replacingOccurrences(of: regExType.reverse, with: "", options: .regularExpression)
     }
 }
